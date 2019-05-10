@@ -28,7 +28,7 @@ import (
 )
 ```
 
-接下来，你需要在`nameServiceApp`结构体中添加存储的key和`Keepers`，并更新构造函数：
+接下来，你需要在`nameServiceApp`结构体中添加存储的key(注，即数据库中的表)和`Keepers`，并更新构造函数：
 
 ```go
 
@@ -84,9 +84,9 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 
 - 从每个所需模块中实例化所需的`Keeper`。
 - 生成每个`Keeper`所需的`storeKey`。
-- 注册每个模块的`handler`。`baseapp`的`路由器`的 `AddRoute()` 方法用来做这个。
-- 注册每个模块的`querier`。`baseapp`的`queryRouter`中的`AddRoute()`方法用来做这个。
-- 将`KVStores`挂载到`baseApp`的multistore提供的key值。
+- 注册每个模块的`handler`。`baseapp`的`router`的 `AddRoute()` 方法用于实现此目的。
+- 注册每个模块的`querier`。`baseapp`的`queryRouter`中的`AddRoute()`方法用来实现此目的。
+- 将`KVStores`挂载到`baseApp`的multistore上去。
 - 设置`initChainer`来定义初始应用程序状态。
 
 你最终的构造函数应该如下所示：
@@ -178,7 +178,7 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 }
 ```
 
-> 注意：上面提到的 TransientStore 是 KVStore 的内存实现，用于未持久化的状态。
+> 注意：上面提到的 TransientStore 是 KVStore 的内存实现，并未实现持久化存储(注，即并未存储到硬盘上)。
 
 `initChainer`定义了`genesis.json`中的帐户如何在初始化区块链时被映射到应用程序状态。`ExportAppStateAndValidators`函数可帮助引导初始化应用程序的状态。你现在不需要太关心它们。
 
