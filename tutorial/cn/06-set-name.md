@@ -2,7 +2,7 @@
 
 ## `Msg`
 
-SDK中`Msg`的命令约束是 `Msg{.Action}`。要实现的第一个操作是`SetName`，因此命名为`MsgSetName`。此`Msg`允许域名的所有者设置该域名的解析返回值。首先在名为`./x/nameservice/msgs.go`的新文件中定义`MsgSetName`：
+SDK中`Msg`的命令的规则是 `Msg{.Action}`(注：即Msg+Action)。照此规则，操作`SetName`的函数名称为`MsgSetName`。此`Msg`允许域名的所有者设置该域名的解析返回值。首先在名为`./x/nameservice/msgs.go`的新文件中定义`MsgSetName`：
 
 ```go
 package nameservice
@@ -46,7 +46,7 @@ func (msg MsgSetName) Route() string { return "nameservice" }
 func (msg MsgSetName) Type() string { return "set_name"}
 ```
 
-SDK使用上述函数将`Msg`路由至合适的模块进行处理。它们还为用于索引的数据库标签添加了可读性的名称。
+SDK使用上述函数将`Msg`路由至合适的模块进行处理。它们还为用于索引的数据库标签添加了人类可读的名称。
 
 ```go
 // ValidateBasic runs stateless checks on the message
@@ -61,7 +61,7 @@ func (msg MsgSetName) ValidateBasic() sdk.Error {
 }
 ```
 
-`ValidateBasic`用于对`Msg`的有效性进行一些基本的**无状态**检查。在此情形下，请检查没有属性为空。请注意这里使用`sdk.Error`类型。 SDK提供了一组应用开发人员经常遇到的错误类型。
+`ValidateBasic`用于对`Msg`的有效性进行一些基本的**无状态**检查。在nameservice的应用中，没有什么需要validateBasic检查的项目。。请注意这里使用`sdk.Error`类型。 SDK提供了一组应用开发人员经常遇到的错误类型。
 
 ```go
 // GetSignBytes encodes the message for signing
@@ -74,7 +74,7 @@ func (msg MsgSetName) GetSignBytes() []byte {
 }
 ```
 
-`GetSignBytes`定义了如何编码`Msg`以进行签名。在大多数情形下，要编码成排好序的JSON。不应修改输出。
+`GetSignBytes`定义了如何获取`Msg`的待签名bytes。在大多数情形下，只要对结构体按照json格式进行序列话就好，不要修改序列化的结果。
 
 ```go
 // GetSigners defines whose signature is required
@@ -83,11 +83,11 @@ func (msg MsgSetName) GetSigners() []sdk.AccAddress {
 }
 ```
 
-`GetSigners`定义一个`Tx`上需要哪些人的签名才能使其有效。在这种情形下，`MsgSetName`要求域名所有者在尝试重置域名解析值时要对该交易签名。
+`GetSigners`定义一个`Tx`上需要哪些人的签名才能使其有效。例如，当域名所有者在通过`MsgSetName` 尝试重置域名解析值时要对该交易(即MsgSetName)签名。
 
 ## `Handler`
 
-现在`MsgSetName`已经定义好了，下一部来定义收到此Msg时需要采取的操作。也就是`handler`所要做的。
+现在`MsgSetName`已经定义好了，下一步需定义收到此Msg时需要采取的操作。也就是`handler`所要做的。
 
 在一个新文件(`./x/nameservice/handler.go`)先写入如下代码：
 
