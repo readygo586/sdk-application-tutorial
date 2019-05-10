@@ -44,7 +44,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 ```
 
-现在已定义路由器，为每个查询定义输入和响应：
+现在已定义路由器，接下来需要定义每个查询的输入和响应：
 
 ```go
 // nolint: unparam
