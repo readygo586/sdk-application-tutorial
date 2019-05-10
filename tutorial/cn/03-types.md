@@ -1,20 +1,20 @@
 # 类型
 
-我们要做的第一件事是定义一个结构，包含域名所有元数据。 依据 ICANN DNS 术语，我们之后将此结构称为 Whois。
+我们要做的第一件事是定义一个数据结构用于存储域名所有元数据。 依据 ICANN DNS 术语，我们之后将此结构称为 Whois。
 
 ## `types.go`
 
-首先创建文件 `./x/nameservice/types.go` 在其内定义模块自有类型，在 Cosmos SDK 应用中，习惯上将模块相关的代码放在 `./x/` 文件夹中。
+首先创建文件 `./x/nameservice/types.go` 来存储用户自定义的的数据类型，在 Cosmos SDK 应用中，习惯上将模块相关的代码放在 `./x/` 文件夹中。
 
 ## Whois
 
-每个域名有三个预期相关的数据：
+每个域名包含三个数据：
 
 - Value - 域名解析出为的值。这是任意字符串，但将来您可以修改它以要求它适合特定格式，例如IP地址，DNS区域文件或区块链地址。
 - Owner - 该域名当前所有者的地址。
 - Price - 你需要为购买域名支付的费用。
 
-要开始你的 SDK 模块，在 `./x/nameservice/types.go`  文件中定义 `nameservice.Whois` 结构。
+在 `./x/nameservice/types.go`  文件中定义 `nameservice.Whois` 结构。
 
 ```go
 package nameservice
@@ -31,7 +31,7 @@ type Whois struct {
 }
 ```
 
-在[设计](./01-app-design.md)文档中提到过，如果名称尚未有所有者，我们希望使用 MinPrice 对其进行初始化。
+如在[设计](./01-app-design.md)文档中提到过，如果名称目前还没有owner，我们将使用 MinPrice 对Price进行初始化。
 
 ```go
 // Initial Starting Price for a name that was never previously owned
