@@ -45,4 +45,4 @@ func NewWhois() Whois {
 }
 ```
 
-### 现在我们继续去编写 [Keeper](./04-keeper.md) 模块的代码。
+### 现在我们继续去编写这个模块的[Keeper](./04-keeper.md) 代码。
