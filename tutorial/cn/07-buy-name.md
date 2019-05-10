@@ -75,7 +75,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 ```
 
-最后，定义`BuyName`的`handler`，该函数执行由msg触发的状态转换。请记住，此时msg已运行其`ValidateBasic`函数，因此已进行了一些输入验证。但是，`ValidateBasic`无法查询应用程序状态。应在`handler`中执行依赖于网络状态（例如帐户余额）的验证逻辑。
+最后，定义`BuyName`的`handler`，该函数执行由msg触发的状态转换。请记住，此时msg已运行其`ValidateBasic`函数，因此已进行对输入做了一些验证。但是，`ValidateBasic`无法查询应用程序状态。应在`handler`中执行依赖于网络状态（例如帐户余额）的验证逻辑。
 
 ```go
 // Handle a message to buy name
@@ -104,7 +104,7 @@ func handleMsgBuyName(ctx sdk.Context, keeper Keeper, msg MsgBuyName) sdk.Result
 
 如果没有所有者，你的`nameservice`模块会把`Buyer`的资金“燃烧”（即发送到不可恢复的地址）。
 
-如果`SubtractCoins`或`SendCoins`返回一个非空错误，handler会抛出一个错误，回退状态转变。没有的话，使用之前在`Keeper`上定义的 getter 和 setter，handler 将买方设置为新所有者，并将新价格设置为当前出价。
+如果`SubtractCoins`或`SendCoins`返回一个非空错误，handler会抛出一个错误，回退状态迁移。没有的话，使用之前在`Keeper`上定义的 getter 和 setter，handler 将买方设置为新所有者，并将新价格设置为当前出价。
 
 > 注意：此handler使用`coinKeeper`中的函数执行货币相关操作。如果你的应用程序正在执行货币相关操作，你可能需要查看此模块的[文档](https://godoc.org/github.com/cosmos/cosmos-sdk/x/bank#BaseKeeper)，以查看它提供的功能。
 
