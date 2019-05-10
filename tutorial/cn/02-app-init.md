@@ -2,7 +2,7 @@
 
 首先创建一个新的文件`./app.go`。这个文件是确定性状态机的核心。
 
-在`app.go`中，你定义了应用程序在接收交易时执行的操作。但首先，它要能够以正确的顺序接收交易。这是 [Tendermint共识引擎](https://github.com/tendermint/tendermint)的职责。
+在`app.go`中，定义了应用程序收到交易时的行为。但首先，它要能够以正确的顺序接收交易。这是 [Tendermint共识引擎](https://github.com/tendermint/tendermint)的职责。
 
 引入必要的依赖：
 
@@ -25,7 +25,7 @@ import (
 - [`dbm`](https://godoc.org/github.com/tendermint/tendermint/libs/db): Tendermint 的数据库代码
 - [`baseapp`](https://godoc.org/github.com/cosmos/cosmos-sdk/baseapp): 如下
 
-这里有几个包是`tendermint`包。Tendermint 通过名为 [ABCI](https://github.com/tendermint/tendermint/tree/master/abci) 的接口将交易从网络传递给应用程序。如果你要查看正在构建的区块链节点的架构，如下所示：
+这里有几个包是`tendermint`包。Tendermint 通过 [ABCI](https://github.com/tendermint/tendermint/tree/master/abci) 接口将交易从网络传递给应用程序。从应用开发者的角度来看，一个区块链节点的架构如下所示：
 
 ```
 +---------------------+
@@ -47,13 +47,13 @@ import (
 
 幸运的是，你不必实现ABCI接口。Cosmos SDK以[`baseapp`](https://godoc.org/github.com/cosmos/cosmos-sdk/baseapp)的形式提供了它的实现样板。
 
-`baseapp`做了以下几点：
+`baseapp`实现了如下功能：
 
 - 解码从 Tendermint 共识引擎接收到的交易。
-- 从交易中提取 messages 并做基本的合理性校验。
-- 将这些 message 路由到合适的模块使其被正确处理。注意`baseapp`并不了解你想要使用的具体模块。你要做的就是在`app.go`中声明这些模块，在接下来的教程中将会看到这些工作。`baseapp`仅实现了适用于任意模块的核心路由逻辑。
-- 如果 ABCI 消息是[`DeliverTx`](https://tendermint.com/docs/spec/abci/abci.html#delivertx)（[`CheckTx`](https://tendermint.com/docs/spec/abci/abci.html#checktx)）的话就Commit。
-- 帮助设置[`BeginBlock`](https://tendermint.com/docs/spec/abci/abci.html#beginblock)和[`EndBlock`](https://tendermint.com/docs/spec/abci/abci.html#endblock),这两种消息让你能定义在每个区块开始和结束时执行的逻辑。实际上，每个模块实现了各自的`BeginBlock`和`EndBlock`子逻辑，app的职责是它们都聚合起来。（注意：你不会在你的应用程序中使用这些消息）
+- 从交易中提取 messages 并做基本的合法性检查。
+- 将这些 message 路由到合适的模块以便被正确处理。注意`baseapp`并不了解你想使用的具体模块。你要做的就是在`app.go`中声明这些模块，在接下来的教程中将会看到这些工作。`baseapp`仅实现了适用于任意模块的核心路由逻辑。
+- 如果收到DevliverTx 消息[`DeliverTx`](https://tendermint.com/docs/spec/abci/abci.html#delivertx)（[`CheckTx`](https://tendermint.com/docs/spec/abci/abci.html#checktx)）的话就提交(commit)状态的变化。（注：tedermint core 调用CheckTx 来检查交易是否合法，但是并未在共识节点间达成共识，因此不能在CheckTx时提交，类似于数据库的commit概念）。
+- [`BeginBlock`](https://tendermint.com/docs/spec/abci/abci.html#beginblock)和[`EndBlock`](https://tendermint.com/docs/spec/abci/abci.html#endblock),这两个消息是两个触发点，让你能定义在每个区块开始时和结束时执行的逻辑。实际上，每个模块实现了各自的`BeginBlock`和`EndBlock`子逻辑，app的职责是它们都聚合起来。（注意：你不会在你的应用程序中使用这些消息）
 - 帮助初始化你的 state。
 - 帮助设置 queries。
 
@@ -95,7 +95,7 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 
 很好！现在你有了应用程序的骨架；但是，仍然缺少具体功能。
 
-`baseapp`不了解你要在应用程序中使用的路由或用户交互。应用程序的主要作用是定义这些路由。另一个作用是定义初始状态。这两件事都要求你向应用程序添加模块。
+`baseapp`不了解需要把某个具体的消息路由到哪个模块以及如何处理这条消息。应用程序的主要作用是定义这些路由。另一个作用是定义初始状态。这两件事都要求你向应用程序添加模块。
 
 正如你在应用[程序设计](./01-app-design.md)章节中看到的，你的nameservice需要三个模块：`auth`，`bank`和`nameservice`。前两个已经存在了，但最后一个还没有！`nameservice`模块将定义你的状态机的大部分内容。下一步是构建它。
 
