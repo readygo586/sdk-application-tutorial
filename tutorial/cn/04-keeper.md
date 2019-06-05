@@ -80,7 +80,7 @@ func (k Keeper) GetWhois(ctx sdk.Context, name string) Whois {
 }
 ```
 
-这里，与`SetName`方法一样，首先使用`StoreKey`访问存储。接下来，不使用使用`.Get([] byte) []byte`方法而不是`Set`方法。向函数传参，传递key值，要把`name`字符串转化成`[]byte`，并以`[]byte`的形式返回结果。将此转换成字符串再返回。
+这里，与`SetName`方法一样，首先使用`StoreKey`访问存储。接下来，使用`.Get([] byte) []byte`方法而不是`Set`方法。向函数传参，传递key值，要把`name`字符串转化成`[]byte`，并以`[]byte`的形式返回结果。将此转换成字符串再返回。
 
 如果一个域名尚未在存储中，它返回一个新的 Whois 信息，包含最低价格 MinPrice。
 
